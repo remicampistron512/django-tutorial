@@ -252,3 +252,37 @@ Résultat:
 ```
 
 
+12.  
+
+Commande bash:
+
+```bash
+
+from django.contrib.auth.models import User
+  for user in User.objects.all():
+    print(user.username)
+    
+```
+
+Résultat:
+
+```
+campistronr
+uilisateurTest
+
+```
+
+
+2.2.3 Exercice d'écriture de méthodes du modèle 
+
+1. la méthode age() renvoit : 
+
+```
+1 day, 0:02:16.621566
+70 days, 13:16:37.386794
+104 days, 1:16:37.386937
+13 days, 23:29:02.387104
+7 days, 7:16:37.387269
+6 days, 23:25:55.387434
+2:54:24.511703
+```
