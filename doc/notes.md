@@ -186,6 +186,20 @@ En base de données relationnelle, quelle contrainte garantit l’unicité d’u
 
 8.
 
+Commande bash:
+
+```bash
+
+Question.objects.filter(choice__choice_text__contains="Gérer").distinct()
+
+```
+
+Résultat:
+
+
+```
+<QuerySet [<Question: Quel est le rôle principal d’une couche DAO dans une architecture multi-couches ?>]>
+```
 9.
 
 Commande bash:
