@@ -86,7 +86,6 @@ for q in qlist:
 
 ```
 
-Résultat
 
 ```
 What's up?
@@ -136,6 +135,32 @@ Résultat:
 
 6.
 
+
+Commande bash
+
+
+
+```bash
+
+from django.db.models import Sum
+qlist = Question.objects.annotate(total_votes=Sum('choice__votes')).order_by('total_votes')
+for q in qlist:
+   print(f"votes {q.total_votes or 0} | question: {q.question_text}")
+   
+   
+```
+
+Résultat:
+```
+votes 5 | question: What's up?
+votes 9 | question: En programmation orientée objet, quel principe permet de masquer les détails d’implémentation ?
+votes 10 | question: Quelle est l'utilité d'un framework web ?
+votes 11 | question: En base de données relationnelle, quelle contrainte garantit l’unicité d’une ligne ?
+votes 15 | question: En Java, quel type est le plus adapté pour représenter un montant d’argent ?
+votes 17 | question: Dans une API REST, quelle méthode HTTP est généralement utilisée pour créer une ressource ?
+votes 18 | question: Quel est le rôle principal d’une couche DAO dans une architecture multi-couches ?
+
+```
 7.
 
 Commande bash
