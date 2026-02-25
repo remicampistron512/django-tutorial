@@ -13,7 +13,9 @@ class Question(models.Model):
     pub_date = models.DateTimeField("date published")
 
     def __str__(self):
-        return text_excerpt(self.question_text, MAX_LENGTH)
+        return "{} {}".format(self.pub_date,
+                              text_excerpt(self.question_text,
+                                           MAX_LENGTH))
 
 
 
