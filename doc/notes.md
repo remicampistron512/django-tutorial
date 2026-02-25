@@ -289,8 +289,11 @@ uilisateurTest
 
 3.2 Exercice sur les parties 3 et 4
 
-1. Dans le template Il faut ajouter 
+1. Dans le template Il faut ajouter : 
     ```
    - {{ question.pub_date}}
    ```
    
+2. il faut créer dans les templates all.html basé sur le template par défaut de index, puis ajouter la route et ajouter la fonction all dans views.py
+3. il faut modifier models pour obtenir un pourcentage de votes pour chaque question, dans les vues utiliser get_choices
+et afficher le tout dans le template

@@ -22,7 +22,7 @@ class Question(models.Model):
         choices = self.choice_set.all()
         for c in choices:
             total += c.votes
-        return [(c.choice_text, c.votes, c.votes / total)
+        return [(c.choice_text, c.votes, (c.votes / total * 100) if total > 0 else 0)
                 for c in choices]
 
     def get_max_choice(self):

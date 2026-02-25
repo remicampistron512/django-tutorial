@@ -32,6 +32,18 @@ def all(request):
         {"questions": Question.objects.all()},
     )
 
+def frequency(request, question_id):
+
+    question = get_object_or_404(Question, pk=question_id)
+
+    return render(
+        request,
+        "polls/frequency.html",
+        {
+            "question" : question,
+            "choices": question.get_choices()},
+    )
+
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
