@@ -286,3 +286,11 @@ uilisateurTest
 6 days, 23:25:55.387434
 2:54:24.511703
 ```
+
+3.2 Exercice sur les parties 3 et 4
+
+1. Dans le template Il faut ajouter 
+    ```
+   - {{ question.pub_date}}
+   ```
+   
