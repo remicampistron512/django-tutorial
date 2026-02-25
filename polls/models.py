@@ -17,7 +17,13 @@ class Question(models.Model):
                               text_excerpt(self.question_text,
                                            MAX_LENGTH))
 
-
+    def get_choices(self):
+        total = 0
+        choices = self.choice_set.all()
+        for c in choices:
+            total += c.votes
+        return [(c.choice_text, c.votes, c.votes / total)
+                for c in choices]
 
 
     def was_published_recently(self):
