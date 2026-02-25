@@ -7,6 +7,10 @@ class QuestionAdmin(admin.ModelAdmin):
     list_filter = ('pub_date',)
     ordering = ('pub_date',)
     search_fields = ('question_text',)
+    fieldsets = [
+        (None, {"fields": ["question_text"]}),
+        ("Date information", {"fields": ["pub_date"]}),
+    ]
 
 class ChoiceAdmin(admin.ModelAdmin):
     list_display = ('question', 'choice_text', 'votes')

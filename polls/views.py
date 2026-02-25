@@ -47,6 +47,7 @@ def statistics(request):
     total_choices = Choice.objects.all().count()
     total_votes = Choice.objects.all().aggregate(sum=Sum("votes"))["sum"]
     mean_votes_per_question = Choice.objects.all().aggregate(sum=Sum("votes"))["sum"] / total_questions
+    most_popular_question = Question.get_most_popular()
 
 
     return render(
@@ -56,7 +57,8 @@ def statistics(request):
             "total_questions": total_questions,
             "total_choices": total_choices,
             "total_votes": total_votes,
-            "mean_votes_per_question": mean_votes_per_question
+            "mean_votes_per_question": mean_votes_per_question,
+            "most_popular_question": most_popular_question
          },
 
     )

@@ -4,18 +4,44 @@ from django.utils import timezone  # type: ignore
 
 MAX_LENGTH = 20
 
+
 def text_excerpt(text, max_length):
     return text[:max_length] + ('...' if len(text) > max_length
                                 else '')
+
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField("date published")
 
+    @classmethod
+    def get_most_popular(cls):
+        all_questions = cls.objects.all()
+        best_answer = (0,0)
+        for question in all_questions:
+            choices = question.choice_set.all()
+            total_votes = 0
+            for choice in choices:
+               total_votes += choice.votes
+
+            if best_answer[1] < total_votes:
+                best_answer = question, total_votes
+
+        return best_answer
+
+
+
+
+
+
+
+
+
     def __str__(self):
         return "{} {}".format(self.pub_date,
                               text_excerpt(self.question_text,
                                            MAX_LENGTH))
+
 
     def get_choices(self):
         total = 0
