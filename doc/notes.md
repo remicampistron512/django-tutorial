@@ -297,3 +297,6 @@ uilisateurTest
 2. il faut créer dans les templates all.html basé sur le template par défaut de index, puis ajouter la route et ajouter la fonction all dans views.py
 3. il faut modifier models pour obtenir un pourcentage de votes pour chaque question, dans les vues utiliser get_choices
 et afficher le tout dans le template
+4. ajouter un template, la route puis faire les calculs dans les vues
+
+4
