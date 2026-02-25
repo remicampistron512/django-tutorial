@@ -25,6 +25,16 @@ class Question(models.Model):
         return [(c.choice_text, c.votes, c.votes / total)
                 for c in choices]
 
+    def get_max_choice(self):
+        total = 0
+
+        choices = self.choice_set.all()
+        max_choice = choices[0]
+        for c in choices:
+            total += c.votes
+        if c.votes > max_choice.votes:
+            max_choice = c
+        return (max_choice.choice_text, max_choice.votes / total)
 
     def was_published_recently(self):
         return self.pub_date >= timezone.now() - datetime.timedelta(days=1)
