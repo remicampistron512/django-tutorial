@@ -1,4 +1,4 @@
-from django.db.models import F
+from django.db.models import F, Sum
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
@@ -31,6 +31,27 @@ def all(request):
         "polls/all.html",
         {"questions": Question.objects.all()},
     )
+
+def statistics(request):
+
+    total_questions = Question.objects.all().count()
+    total_choices = Choice.objects.all().count()
+    total_votes = Choice.objects.all().aggregate(sum=Sum("votes"))["sum"]
+    mean_votes_per_question = Choice.objects.all().aggregate(sum=Sum("votes"))["sum"] / total_questions
+
+
+    return render(
+        request,
+        "polls/statistics.html",
+        {
+            "total_questions": total_questions,
+            "total_choices": total_choices,
+            "total_votes": total_votes,
+            "mean_votes_per_question": mean_votes_per_question
+         },
+
+    )
+
 
 def frequency(request, question_id):
 
