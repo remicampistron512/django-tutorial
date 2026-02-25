@@ -299,4 +299,8 @@ uilisateurTest
 et afficher le tout dans le template
 4. ajouter un template, la route puis faire les calculs dans les vues
 
-4
+4.1
+
+partie 6 : 
+problème de chargement de css, obligé de changer STATIC_URL = 'static/' en STATIC_URL = '/static/' dans settings.py
+
