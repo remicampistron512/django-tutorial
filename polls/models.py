@@ -1,4 +1,6 @@
 import datetime
+
+from django.contrib import admin
 from django.db import models  # type: ignore
 from django.utils import timezone  # type: ignore
 
@@ -74,6 +76,12 @@ class Question(models.Model):
         if c.votes > max_choice.votes:
             max_choice = c
         return (max_choice.choice_text, max_choice.votes / total)
+
+    @admin.display(
+        boolean=True,
+        ordering="pub_date",
+        description="Published recently?",
+    )
 
     def was_published_recently(self):
         now = timezone.now()
