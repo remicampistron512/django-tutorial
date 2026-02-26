@@ -1,0 +1,19 @@
+<form action="{% url 'polls:add_question' %}" method="post">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Ajouter une question</legend>
+        <label for="question_text">Question</label>
+        <input id="question_text" type="text" name="question_text">
+        <label for="choice_text1">Choice 1</label>
+        <input id="choice_text1" type="text" name="choice_text1">
+        <label for="choice_text2">Choice 2</label>
+        <input id="choice_text2" type="text" name="choice_text2">
+        <label for="choice_text3">Choice 3</label>
+        <input id="choice_text3" type="text" name="choice_text3">
+        <label for="choice_text4">Choice 4</label>
+        <input id="choice_text4" type="text" name="choice_text4">
+        <label for="choice_text5">Choice 5</label>
+        <input id="choice_text5" type="text" name="choice_text5">
+    </fieldset>
+    <input type="submit" value="Add Question">
+</form>
