@@ -1,5 +1,5 @@
 from django.db.models import F, Sum
-from django.http import HttpResponse, Http404, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect, request
 from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 from django.urls import reverse
@@ -40,6 +40,33 @@ def all(request):
         "polls/all.html",
         {"questions": Question.objects.all()},
     )
+
+
+def add_question(request):
+    if request.method == "POST":
+        question_text = request.POST.get("question_text", "").strip()
+        choices = []
+
+        for i in range(5):
+            text = request.POST.get("choice_text"+str(i), "").strip()
+            if text:
+                choices.append(text)
+
+        if question_text and choices:
+            q = Question.objects.create(
+                question_text=question_text,
+                pub_date=timezone.now()
+            )
+
+            for text in choices:
+                Choice.objects.create(
+                    question=q,
+                    choice_text=text
+                )
+
+            return HttpResponseRedirect(reverse("polls:add_question"))
+
+    return render(request, "polls/add_question.html")
 
 def statistics(request):
 
