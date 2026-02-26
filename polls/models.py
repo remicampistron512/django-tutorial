@@ -29,7 +29,20 @@ class Question(models.Model):
 
         return best_answer
 
+    @classmethod
+    def get_least_popular(cls):
+        all_questions = cls.objects.all()
+        worst_question = None
+        min_votes = None
 
+        for question in all_questions:
+            total_votes = sum(choice.votes for choice in question.choice_set.all())
+
+            if min_votes is None or total_votes < min_votes:
+                worst_question = question
+                min_votes = total_votes
+
+        return worst_question, min_votes
 
 
 
