@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.urls import reverse
 from django.views import generic
 
-from .forms import NameForm, ContactForm
+from .forms import NameForm, ContactForm, AddQuestionForm
 from .models import Question, Choice
 from django.core.mail import send_mail
 
@@ -166,3 +166,33 @@ def contact(request):
         form = ContactForm()
 
     return render(request, "contact.html", {"form": form})
+
+def add_question2(request):
+    if request.method == "POST":
+        question_text = AddQuestionForm(request.POST)
+        choices = []
+
+
+        for i in range(5):
+            text = request.POST.get("choice_"+str(i), "").strip()
+            if text:
+                choices.append(text)
+
+        if question_text and choices:
+            q = Question.objects.create(
+                question_text=question_text,
+                pub_date=timezone.now()
+            )
+
+            for text in choices:
+                Choice.objects.create(
+                    question=q,
+                    choice_text=text
+                )
+    else:
+        form = AddQuestionForm()
+
+
+
+
+    return render(request, "polls/add_question2.html",{"form": form})

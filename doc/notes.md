@@ -329,3 +329,54 @@ if form.is_valid():
     
 ```
 
+5.2 Exercice sur les formulaires
+
+Utilisation d'une classe Form pour constituer le formulaire 
+
+forms.py
+
+```
+class AddQuestionForm(forms.Form):
+    question_text = forms.CharField(max_length=200)
+    choice_1 = forms.CharField(max_length=200)
+    choice_2 = forms.CharField(max_length=200)
+    choice_3 = forms.CharField(max_length=200)
+    choice_4 = forms.CharField(max_length=200)
+    choice_5 = forms.CharField(max_length=200)
+```
+
+views.py 
+
+```
+def add_question2(request):
+    if request.method == "POST":
+        question_text = AddQuestionForm(request.POST)
+        choices = []
+
+
+        for i in range(5):
+            text = request.POST.get("choice_"+str(i), "").strip()
+            if text:
+                choices.append(text)
+
+        if question_text and choices:
+            q = Question.objects.create(
+                question_text=question_text,
+                pub_date=timezone.now()
+            )
+
+            for text in choices:
+                Choice.objects.create(
+                    question=q,
+                    choice_text=text
+                )
+    else:
+        form = AddQuestionForm()
+
+
+
+
+    return render(request, "polls/add_question2.html",{"form": form})
+```
+
+

@@ -10,3 +10,10 @@ class ContactForm(forms.Form):
     sender = forms.EmailField()
     cc_myself = forms.BooleanField(required=False)
 
+class AddQuestionForm(forms.Form):
+    question_text = forms.CharField(max_length=200)
+    choice_1 = forms.CharField(max_length=200)
+    choice_2 = forms.CharField(max_length=200)
+    choice_3 = forms.CharField(max_length=200)
+    choice_4 = forms.CharField(max_length=200)
+    choice_5 = forms.CharField(max_length=200)
