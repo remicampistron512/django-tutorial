@@ -5,9 +5,9 @@ from django.utils import timezone
 from django.urls import reverse
 from django.views import generic
 
-from .forms import NameForm
+from .forms import NameForm, ContactForm
 from .models import Question, Choice
-
+from django.core.mail import send_mail
 
 class IndexView(generic.ListView):
     template_name = "polls/index.html"
@@ -145,3 +145,24 @@ def get_name(request):
         form = NameForm()
 
     return render(request, "polls/name.html", {"form": form})
+
+def contact(request):
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            subject = form.cleaned_data["subject"]
+            message = form.cleaned_data["message"]
+            sender = form.cleaned_data["sender"]
+            cc_myself = form.cleaned_data["cc_myself"]
+
+            recipients = ["info@example.com"]
+            if cc_myself:
+                recipients.append(sender)
+
+            send_mail(subject, message, sender, recipients)
+
+            return HttpResponseRedirect("/thanks/")
+    else:
+        form = ContactForm()
+
+    return render(request, "contact.html", {"form": form})
