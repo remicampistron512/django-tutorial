@@ -1,5 +1,14 @@
+
+{% extends "base.html" %}
+{% block title %}Formulaire d'ajout de nom{% endblock %}
+{% block header %}Formulaire d'ajout de nom{% endblock %}
+{% block main %}
+
 <form action="/your-name/" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit">
 </form>
+
+
+{% endblock %}

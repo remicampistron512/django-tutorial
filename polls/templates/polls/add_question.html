@@ -1,3 +1,8 @@
+{% extends "base.html" %}
+{% block title %}Ajouter une question{% endblock %}
+{% block header %}Ajouter une question{% endblock %}
+{% block main %}
+
 <form action="{% url 'polls:add_question' %}" method="post">
     {% csrf_token %}
     <fieldset>
@@ -17,3 +22,4 @@
     </fieldset>
     <input type="submit" value="Add Question">
 </form>
+{% endblock %}

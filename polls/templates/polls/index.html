@@ -1,7 +1,8 @@
-{% load static %}
+{% extends "base.html" %}
 
-<link rel="stylesheet" href="{% static 'polls/style.css' %}">
-
+{% block title %}Accueil{% endblock %}
+{% block header %}Accueil du Tutoriel Django{% endblock %}
+{% block main %}
 {% if latest_question_list %}
     <ul>
     {% for question in latest_question_list %}
@@ -14,3 +15,6 @@
 
 <a href="{% url 'polls:add_question' %}">Ajouter une question</a>
 <a href="{% url 'polls:add_question2' %}">Ajouter une question (version améliorée)</a>
+
+
+{% endblock %}

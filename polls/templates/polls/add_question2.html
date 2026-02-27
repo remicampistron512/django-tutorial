@@ -1,5 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Ajouter une question{% endblock %}
+{% block header %}Ajouter une question{% endblock %}
+{% block main %}
 <form action="/add_question2/" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit">
 </form>
+{% endblock %}
