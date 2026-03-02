@@ -56,30 +56,33 @@ def all(request):
 
 
 def add_question(request):
-    if request.method == "POST":
-        question_text = request.POST.get("question_text", "").strip()
-        choices = []
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            question_text = request.POST.get("question_text", "").strip()
+            choices = []
 
-        for i in range(5):
-            text = request.POST.get("choice_text"+str(i), "").strip()
-            if text:
-                choices.append(text)
+            for i in range(5):
+                text = request.POST.get("choice_text"+str(i), "").strip()
+                if text:
+                    choices.append(text)
 
-        if question_text and choices:
-            q = Question.objects.create(
-                question_text=question_text,
-                pub_date=timezone.now()
-            )
-
-            for text in choices:
-                Choice.objects.create(
-                    question=q,
-                    choice_text=text
+            if question_text and choices:
+                q = Question.objects.create(
+                    question_text=question_text,
+                    pub_date=timezone.now()
                 )
 
-            return HttpResponseRedirect(reverse("polls:add_question"))
+                for text in choices:
+                    Choice.objects.create(
+                        question=q,
+                        choice_text=text
+                    )
 
-    return render(request, "polls/add_question.html")
+                return HttpResponseRedirect(reverse("polls:add_question"))
+
+        return render(request, "polls/add_question.html")
+    else:
+        return HttpResponseRedirect(reverse("polls:index"))
 
 def statistics(request):
 
@@ -219,31 +222,30 @@ def logout(request):
 
 
 def add_question2(request):
-    if request.method == "POST":
-        question_text = AddQuestionForm(request.POST)
-        choices = []
+    if request.user.is_authenticated:
+        if request.method == "POST":
+            question_text = AddQuestionForm(request.POST)
+            choices = []
 
 
-        for i in range(5):
-            text = request.POST.get("choice_"+str(i), "").strip()
-            if text:
-                choices.append(text)
+            for i in range(5):
+                text = request.POST.get("choice_"+str(i), "").strip()
+                if text:
+                    choices.append(text)
 
-        if question_text and choices:
-            q = Question.objects.create(
-                question_text=question_text,
-                pub_date=timezone.now()
-            )
-
-            for text in choices:
-                Choice.objects.create(
-                    question=q,
-                    choice_text=text
+            if question_text and choices:
+                q = Question.objects.create(
+                    question_text=question_text,
+                    pub_date=timezone.now()
                 )
+
+                for text in choices:
+                    Choice.objects.create(
+                        question=q,
+                        choice_text=text
+                    )
+        else:
+            form = AddQuestionForm()
+        return render(request, "polls/add_question2.html",{"form": form})
     else:
-        form = AddQuestionForm()
-
-
-
-
-    return render(request, "polls/add_question2.html",{"form": form})
+        return HttpResponseRedirect(reverse("polls:index"))
