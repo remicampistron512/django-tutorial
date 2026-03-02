@@ -12,7 +12,7 @@
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
-
+<a href="{% url 'polls:logout' %}">Se deconnecter</a>
 <a href="{% url 'polls:add_question' %}">Ajouter une question</a>
 <a href="{% url 'polls:add_question2' %}">Ajouter une question (version améliorée)</a>
 

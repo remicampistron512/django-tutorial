@@ -1,24 +1,30 @@
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 from django.db.models import F, Sum
 from django.http import HttpResponse, Http404, HttpResponseRedirect, request
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.urls import reverse
 from django.views import generic
 
-from .forms import NameForm, ContactForm, AddQuestionForm
+from .forms import NameForm, ContactForm, AddQuestionForm, LoginForm
 from .models import Question, Choice
 from django.core.mail import send_mail
 
 class IndexView(generic.ListView):
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("/polls/login")
+        return super().dispatch(request, *args, **kwargs)
+
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
 
     def get_queryset(self):
-        """
-        Return the last five published questions (not including those set to be
-        published in the future).
-        """
-        return Question.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[:5]
+        return Question.objects.filter(
+            pub_date__lte=timezone.now()
+        ).order_by("-pub_date")[:5]
 
 
 class DetailView(generic.DetailView):
@@ -36,11 +42,13 @@ class ResultsView(generic.DetailView):
     template_name = "polls/results.html"
 
 def all(request):
-    return render(
-        request,
-        "polls/all.html",
-        {"questions": Question.objects.all()},
-    )
+
+        return render(
+            request,
+            "polls/all.html",
+            {"questions": Question.objects.all()},
+        )
+
 
 
 def add_question(request):
@@ -196,3 +204,33 @@ def add_question2(request):
 
 
     return render(request, "polls/add_question2.html",{"form": form})
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("../")  # change si besoin
+
+    form = LoginForm(request.POST or None)
+
+    if request.method == "POST" and form.is_valid():
+        username = form.cleaned_data["username"]
+        password = form.cleaned_data["password"]
+
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            next_url = request.GET.get("next")
+            return redirect(next_url or "../")
+        else:
+            messages.error(request, "Identifiants invalides.")
+
+    return render(request, "auth/login.html", {"form": form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect("/polls/login")
+
+
+@login_required
+def home_view(request):
+    return render(request, "index.html")

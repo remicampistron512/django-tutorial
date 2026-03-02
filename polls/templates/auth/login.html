@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Connexion</title>
+  <style>
+    body { font-family: system-ui, Arial; display:flex; min-height:100vh; align-items:center; justify-content:center; }
+    .card { width: 360px; padding: 20px; border: 1px solid #ddd; border-radius: 12px; }
+    label { display:block; margin-top: 12px; }
+    input { width: 100%; padding: 10px; margin-top: 6px; }
+    button { width:100%; margin-top: 16px; padding: 10px; cursor:pointer; }
+    .msg { margin-top: 12px; color: #b00020; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Connexion</h2>
+
+    {% if messages %}
+      <div class="msg">
+        {% for message in messages %}{{ message }}{% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" novalidate>
+      {% csrf_token %}
+
+      <label>{{ form.username.label }}</label>
+      {{ form.username }}
+      {% if form.username.errors %}<div class="msg">{{ form.username.errors }}</div>{% endif %}
+
+      <label>{{ form.password.label }}</label>
+      {{ form.password }}
+      {% if form.password.errors %}<div class="msg">{{ form.password.errors }}</div>{% endif %}
+
+      <button type="submit">Se connecter</button>
+    </form>
+  </div>
+</body>
+</html>

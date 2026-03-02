@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.forms import AuthenticationForm
 
 
 class NameForm(forms.Form):
@@ -17,3 +18,13 @@ class AddQuestionForm(forms.Form):
     choice_3 = forms.CharField(max_length=200)
     choice_4 = forms.CharField(max_length=200)
     choice_5 = forms.CharField(max_length=200)
+
+class LoginForm(AuthenticationForm):
+    username = forms.CharField(
+        label="Nom d'utilisateur",
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Login"})
+    )
+    password = forms.CharField(
+        label="Mot de passe",
+        widget=forms.PasswordInput(attrs={"class": "form-control", "placeholder": "Mot de passe"})
+    )
