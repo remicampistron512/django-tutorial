@@ -1,17 +1,29 @@
+from django.contrib import messages
 from django.db.models import F, Sum
 from django.http import HttpResponse, Http404, HttpResponseRedirect, request
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.urls import reverse
 from django.views import generic
 
-from .forms import NameForm, ContactForm, AddQuestionForm
+from .forms import NameForm, ContactForm, AddQuestionForm, LoginForm
 from .models import Question, Choice
 from django.core.mail import send_mail
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
 class IndexView(generic.ListView):
+
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
+
+
+    def dispatch(self, request, *args, **kwargs):
+        visitor = request.GET.get("visitor") == "true"
+        if not request.user.is_authenticated and (not visitor):
+            login_url = reverse("polls:login")
+            return redirect(f"{login_url}?next={request.get_full_path()}")
+        return super().dispatch(request, *args, **kwargs)
+
 
     def get_queryset(self):
         """
@@ -166,6 +178,45 @@ def contact(request):
         form = ContactForm()
 
     return render(request, "contact.html", {"form": form})
+
+
+def login(request):
+    if request.user.is_authenticated:
+
+        return HttpResponseRedirect(reverse("polls:index"))
+
+    form = LoginForm(request, data=request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        username = form.cleaned_data["username"]
+        password = form.cleaned_data["password"]
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            auth_login(request, user)
+
+            next_url = request.POST.get("next") or request.GET.get("next")
+            return HttpResponseRedirect(next_url or reverse("polls:index"))
+        else:
+            messages.error(request, "Invalid username or password.")
+
+    return render(
+        request,
+        "auth/login.html",
+        {
+            "form": form,
+            "next": request.GET.get("next", "")
+        }
+    )
+
+
+
+
+
+def logout(request):
+    auth_logout(request)
+    return HttpResponseRedirect(reverse("polls:login"))
+
 
 def add_question2(request):
     if request.method == "POST":
