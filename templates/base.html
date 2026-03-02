@@ -9,7 +9,19 @@
     <title>{% block title %}Tutoriel Django{% endblock %}</title>
 </head>
 <body>
-<header>{% block header %}Tutoriel Django{% endblock %}</header>
+<header>
+    {% if user.is_authenticated %}
+        <ul>
+            <li>{{ user.get_full_name|default:user.username }}</li>
+            <li><a href="{% url 'polls:logout' %}">Se déconnecter</a></li>
+        </ul>
+    {% else %}
+        <ul>
+            <li><a href="{% url 'polls:login' %}">Se connecter</a></li>
+        </ul>
+    {% endif %}
+
+    {% block header %}Tutoriel Django{% endblock %}</header>
 <main>{% block main %}{% endblock %}</main>
 
 </body>
