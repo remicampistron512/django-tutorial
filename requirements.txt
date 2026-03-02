@@ -6,4 +6,5 @@ django-stubs==5.2.9
 django-stubs-ext==5.2.9
 sqlparse==0.5.5
 types-PyYAML==6.0.12.20250915
-typing_extensi
+typing_extensions==4.15.0
+tzdata==2025.3
