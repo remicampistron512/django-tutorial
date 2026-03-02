@@ -1,15 +1,85 @@
 {% extends "base.html" %}
+
 {% block title %}Statistiques{% endblock %}
-{% block header %}Statistiques{% endblock %}
+
+{% block header %}
+<h1 class="mb-4">Statistiques</h1>
+{% endblock %}
+
 {% block main %}
 
-<ul>
-    <li>Nombre total de sondages enregistrés : {{ total_questions }} </li>
-    <li>Nombre total de choix possibles : {{ total_choices }}</li>
-    <li>Nombre total de votes: {{ total_votes }}</li>
-    <li>Moyenne du nombre de votes par sondage : {{mean_votes_per_question|floatformat:2 }}</li>
-    <li>Réponse la plus populaire: {{most_popular_question.0.question_text}}—{{ most_popular_question.1 }} votes </li>
-    <li>Réponse la moins populaire: {{least_popular_question.0.question_text}}—{{ least_popular_question.1 }} votes </li>
-</ul>
+<div class="row g-4">
+
+    <!-- Summary Cards -->
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Sondages</h6>
+                <h3 class="fw-bold">{{ total_questions }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Choix</h6>
+                <h3 class="fw-bold">{{ total_choices }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Total Votes</h6>
+                <h3 class="fw-bold">{{ total_votes }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card shadow text-center h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Moyenne Votes / Sondage</h6>
+                <h3 class="fw-bold">
+                    {{ mean_votes_per_question|floatformat:2 }}
+                </h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Popularity Section -->
+<div class="row mt-5">
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow border-success">
+            <div class="card-body">
+                <h5 class="text-success mb-3">Réponse la plus populaire</h5>
+                <p class="mb-1 fw-semibold">
+                    {{ most_popular_question.0.question_text }}
+                </p>
+                <span class="badge bg-success">
+                    {{ most_popular_question.1 }} votes
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow border-danger">
+            <div class="card-body">
+                <h5 class="text-danger mb-3">Réponse la moins populaire</h5>
+                <p class="mb-1 fw-semibold">
+                    {{ least_popular_question.0.question_text }}
+                </p>
+                <span class="badge bg-danger">
+                    {{ least_popular_question.1 }} votes
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

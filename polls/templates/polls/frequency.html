@@ -1,18 +1,51 @@
-
 {% extends "base.html" %}
+
 {% block title %}Statistiques{% endblock %}
-{% block header %}Statistiques{% endblock %}
+
+{% block header %}
+<h1 class="mb-4">Statistiques</h1>
+{% endblock %}
+
 {% block main %}
 
-<h1>{{ question.question_text }}</h1>
-<p>{% for choice_text, votes, percentage in choices %}
-    <ul>
-    <li>Choix : {{ choice_text }}</li>
-    <li>Votes : {{ votes }}</li>
-    <li>Pourcentage : {{ percentage|floatformat:2  }}</li>
-    </ul>
-{% endfor %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
 
-    </p>
+        <div class="card shadow">
+            <div class="card-body p-4">
+
+                <h4 class="mb-4">{{ question.question_text }}</h4>
+
+                {% for choice_text, votes, percentage in choices %}
+                    <div class="mb-4">
+
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ choice_text }}</strong>
+                            <span>{{ votes }} vote{{ votes|pluralize }}</span>
+                        </div>
+
+                        <div class="progress mt-2" style="height: 25px;">
+                            <div class="progress-bar bg-success"
+                                 role="progressbar"
+                                 style="width: {{ percentage }}%;"
+                                 aria-valuenow="{{ percentage }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                {{ percentage|floatformat:2 }}%
+                            </div>
+                        </div>
+
+                    </div>
+                {% empty %}
+                    <div class="alert alert-info">
+                        No statistics available.
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+    </div>
+</div>
 
 {% endblock %}

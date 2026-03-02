@@ -1,27 +1,83 @@
 {% extends "base.html" %}
+{% load static %}
+
 {% block title %}Ajouter une question{% endblock %}
+
 {% block header %}
-<div id="addQuestionHeader"><p>Ajouter une question</p><img src="../../static/polls/images/header.png" /></div>
+<div class="text-center mb-4">
+    <h1 class="mb-3">Ajouter une question</h1>
+    <img src="{% static 'polls/images/header.png' %}"
+         class="img-fluid rounded shadow-sm"
+         alt="Header image">
+</div>
 {% endblock %}
+
 {% block main %}
 
-<form action="{% url 'polls:add_question' %}" method="post">
-    {% csrf_token %}
-    <fieldset>
-        <legend>Ajouter une question</legend>
-        <label for="question_text">Question</label>
-        <input id="question_text" type="text" name="question_text">
-        <label for="choice_text1">Choice 1</label>
-        <input id="choice_text1" type="text" name="choice_text1">
-        <label for="choice_text2">Choice 2</label>
-        <input id="choice_text2" type="text" name="choice_text2">
-        <label for="choice_text3">Choice 3</label>
-        <input id="choice_text3" type="text" name="choice_text3">
-        <label for="choice_text4">Choice 4</label>
-        <input id="choice_text4" type="text" name="choice_text4">
-        <label for="choice_text5">Choice 5</label>
-        <input id="choice_text5" type="text" name="choice_text5">
-    </fieldset>
-    <input type="submit" value="Add Question">
-</form>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+
+        <div class="card shadow">
+            <div class="card-body p-4">
+
+                <form action="{% url 'polls:add_question' %}" method="post">
+                    {% csrf_token %}
+
+                    <!-- Question -->
+                    <div class="mb-4">
+                        <label for="question_text" class="form-label">
+                            Question
+                        </label>
+                        <input type="text"
+                               class="form-control"
+                               id="question_text"
+                               name="question_text"
+                               required>
+                    </div>
+
+                    <hr>
+
+                    <h5 class="mb-3">Choix</h5>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Choice 1</label>
+                            <input type="text" class="form-control" name="choice_text0">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Choice 2</label>
+                            <input type="text" class="form-control" name="choice_text1">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Choice 3</label>
+                            <input type="text" class="form-control" name="choice_text2">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Choice 4</label>
+                            <input type="text" class="form-control" name="choice_text3">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Choice 5</label>
+                            <input type="text" class="form-control" name="choice_text4">
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-success">
+                            Ajouter la question
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
 {% endblock %}

@@ -1,18 +1,61 @@
-
 {% extends "base.html" %}
+
 {% block title %}Résultats{% endblock %}
-{% block header %}Résultats{% endblock %}
+
+{% block header %}
+<h1 class="mb-4">Résultats</h1>
+{% endblock %}
+
 {% block main %}
 
-<h1>{{ question.question_text }}</h1>
+<div class="row justify-content-center">
+    <div class="col-lg-8">
 
-<ul>
-{% for choice in question.choice_set.all %}
-    <li>{{ choice.choice_text }} -- {{ choice.votes }} vote{{ choice.votes|pluralize }}</li>
-{% endfor %}
-</ul>
+        <div class="card shadow">
+            <div class="card-body p-4">
 
-<a href="{% url 'polls:detail' question.id %}">Vote again?</a>
+                <h4 class="mb-4">{{ question.question_text }}</h4>
 
+                {% for choice in question.choice_set.all %}
+                    <div class="mb-4">
+
+                        <div class="d-flex justify-content-between">
+                            <strong>{{ choice.choice_text }}</strong>
+                            <span>{{ choice.votes }} vote{{ choice.votes|pluralize }}</span>
+                        </div>
+
+                        <div class="progress mt-2" style="height: 25px;">
+                            {% if question.total_votes > 0 %}
+                                {% widthratio choice.votes question.total_votes 100 as percentage %}
+                            {% else %}
+                                {% with 0 as percentage %}
+                                {% endwith %}
+                            {% endif %}
+
+                            <div class="progress-bar bg-primary"
+                                 role="progressbar"
+                                 style="width: {{ percentage }}%;"
+                                 aria-valuenow="{{ percentage }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                                {{ percentage }}%
+                            </div>
+                        </div>
+
+                    </div>
+                {% endfor %}
+
+                <div class="d-grid mt-4">
+                    <a href="{% url 'polls:detail' question.id %}"
+                       class="btn btn-outline-secondary">
+                        Vote again
+                    </a>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
 
 {% endblock %}
