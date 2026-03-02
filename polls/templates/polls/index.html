@@ -15,9 +15,9 @@
 
 {% if user.is_authenticated %}
   <a href="{% url 'polls:logout' %}">Se déconnecter</a>
-{% endif %}
+
 <a href="{% url 'polls:add_question' %}">Ajouter une question</a>
 <a href="{% url 'polls:add_question2' %}">Ajouter une question (version améliorée)</a>
-
+{% endif %}
 
 {% endblock %}
