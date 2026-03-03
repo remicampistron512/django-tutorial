@@ -11,11 +11,10 @@ from .models import Question, Choice
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
-class IndexView(generic.ListView):
 
+class IndexView(generic.ListView):
     template_name = "polls/index.html"
     context_object_name = "latest_question_list"
-
 
     def dispatch(self, request, *args, **kwargs):
         visitor = request.GET.get("visitor") == "true"
@@ -23,7 +22,6 @@ class IndexView(generic.ListView):
             login_url = reverse("polls:login")
             return redirect(f"{login_url}?next={request.get_full_path()}")
         return super().dispatch(request, *args, **kwargs)
-
 
     def get_queryset(self):
         """
@@ -43,9 +41,11 @@ class DetailView(generic.DetailView):
         """
         return Question.objects.filter(pub_date__lte=timezone.now())
 
+
 class ResultsView(generic.DetailView):
     model = Question
     template_name = "polls/results.html"
+
 
 def all(request):
     return render(
@@ -62,7 +62,7 @@ def add_question(request):
             choices = []
 
             for i in range(5):
-                text = request.POST.get("choice_text"+str(i), "").strip()
+                text = request.POST.get("choice_text" + str(i), "").strip()
                 if text:
                     choices.append(text)
 
@@ -84,15 +84,14 @@ def add_question(request):
     else:
         return HttpResponseRedirect(reverse("polls:index"))
 
-def statistics(request):
 
+def statistics(request):
     total_questions = Question.objects.all().count()
     total_choices = Choice.objects.all().count()
     total_votes = Choice.objects.all().aggregate(sum=Sum("votes"))["sum"]
     mean_votes_per_question = Choice.objects.all().aggregate(sum=Sum("votes"))["sum"] / total_questions
     most_popular_question = Question.get_most_popular()
     least_popular_question = Question.get_least_popular()
-
 
     return render(
         request,
@@ -104,22 +103,22 @@ def statistics(request):
             "mean_votes_per_question": mean_votes_per_question,
             "most_popular_question": most_popular_question,
             "least_popular_question": least_popular_question,
-         },
+        },
 
     )
 
 
 def frequency(request, question_id):
-
     question = get_object_or_404(Question, pk=question_id)
 
     return render(
         request,
         "polls/frequency.html",
         {
-            "question" : question,
+            "question": question,
             "choices": question.get_choices()},
     )
+
 
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
@@ -143,6 +142,7 @@ def vote(request, question_id):
         # user hits the Back button.
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
 
+
 def get_name(request):
     # if this is a POST request we need to process the form data
     if request.method == "POST":
@@ -160,6 +160,7 @@ def get_name(request):
         form = NameForm()
 
     return render(request, "polls/name.html", {"form": form})
+
 
 def contact(request):
     if request.method == "POST":
@@ -183,23 +184,26 @@ def contact(request):
     return render(request, "contact.html", {"form": form})
 
 
+# formulaire de connexion
 def login(request):
+    # l'utilisateur est authentifié, on le renvoie vers l'accueil.
     if request.user.is_authenticated:
-
         return HttpResponseRedirect(reverse("polls:index"))
-
+    # sinon, création du formulaire de login
     form = LoginForm(request, data=request.POST or None)
+    # on a soumis le formulaire
     if request.method == "POST" and form.is_valid():
         username = form.cleaned_data["username"]
         password = form.cleaned_data["password"]
 
         user = authenticate(request, username=username, password=password)
 
+        # l'utilisateur est valide
         if user is not None:
             auth_login(request, user)
-
             next_url = request.POST.get("next") or request.GET.get("next")
             return HttpResponseRedirect(next_url or reverse("polls:index"))
+        # sinon message d'erreur
         else:
             messages.error(request, "Invalid username or password.")
 
@@ -213,23 +217,22 @@ def login(request):
     )
 
 
-
-
-
+# déconnexion
 def logout(request):
     auth_logout(request)
     return HttpResponseRedirect(reverse("polls:login"))
 
 
 def add_question2(request):
+    # l'utilisateur est authentifié.
     if request.user.is_authenticated:
+        # on a ajouté une question, le traitement se lance
         if request.method == "POST":
             question_text = AddQuestionForm(request.POST)
             choices = []
 
-
             for i in range(5):
-                text = request.POST.get("choice_"+str(i), "").strip()
+                text = request.POST.get("choice_" + str(i), "").strip()
                 if text:
                     choices.append(text)
 
@@ -244,8 +247,10 @@ def add_question2(request):
                         question=q,
                         choice_text=text
                     )
+        # on consulte simplément la page, on construit le formulaire
         else:
             form = AddQuestionForm()
-        return render(request, "polls/add_question2.html",{"form": form})
+        return render(request, "polls/add_question2.html", {"form": form})
+    # l'utilisateur n'est pas authentifié, on le renvoie vers l'index.
     else:
         return HttpResponseRedirect(reverse("polls:index"))
