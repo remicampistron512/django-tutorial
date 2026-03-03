@@ -18,7 +18,7 @@
             <div class="card shadow">
                 <div class="card-body p-4">
 
-                    <h3 class="text-center mb-4">Login</h3>
+                    <h3 class="text-center mb-4">Login {{messages.error}}</h3>
 
                     <!-- Django Messages -->
                     {% if messages %}
@@ -53,10 +53,13 @@
                                 {{ form.password.label }}
                             </label>
                             {{ form.password }}
-                            {% if form.password.errors %}
-                                <div class="text-danger small">
-                                    {{ form.password.errors }}
+                            {% if messages %}
+                                {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                  {{ message }}
+                                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                 </div>
+                                {% endfor %}
                             {% endif %}
                         </div>
 
