@@ -204,8 +204,8 @@ def login(request):
             next_url = request.POST.get("next") or request.GET.get("next")
             return HttpResponseRedirect(next_url or reverse("polls:index"))
         # sinon message d'erreur
-        else:
-            messages.error(request, "Invalid username or password.")
+    else:
+        messages.error(request, "Invalid username or password.")
 
     return render(
         request,
