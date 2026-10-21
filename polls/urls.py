@@ -1,7 +1,10 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 from debug_toolbar.toolbar import debug_toolbar_urls
 from . import views
 
+router = routers.SimpleRouter()
+router.register('question', views.QuestionAPIViewSet, basename='question')
 app_name = "polls"
 urlpatterns = [
     path("", views.IndexView.as_view(), name="index"),  # type: ignore
@@ -16,7 +19,7 @@ urlpatterns = [
     path("name/", views.get_name, name="name"),
     path("login/", views.login, name="login"),
     path("logout/", views.logout, name="logout"),
-    path("<int:question_id>/remove_question/", views.remove_question, name="remove_question")
-
+    path("<int:question_id>/remove_question/", views.remove_question, name="remove_question"),
+    path('api/', include(router.urls))
 
 ]

@@ -5,11 +5,17 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.urls import reverse
 from django.views import generic
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 
 from .forms import NameForm, ContactForm, AddQuestionForm, LoginForm
 from .models import Question, Choice
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+
+from .serializers import QuestionSerializer
 
 
 class IndexView(generic.ListView):
@@ -69,7 +75,8 @@ def add_question(request):
             if question_text and choices:
                 q = Question.objects.create(
                     question_text=question_text,
-                    pub_date=timezone.now()
+                    pub_date=timezone.now(),
+                    user=request.user,
                 )
 
                 for text in choices:
@@ -247,7 +254,8 @@ def add_question2(request):
             if question_text and choices:
                 q = Question.objects.create(
                     question_text=question_text,
-                    pub_date=timezone.now()
+                    pub_date=timezone.now(),
+                    user=request.user,
                 )
 
                 for text in choices:
@@ -262,3 +270,15 @@ def add_question2(request):
     # l'utilisateur n'est pas authentifié, on le renvoie vers l'index.
     else:
         return HttpResponseRedirect(reverse("polls:index"))
+
+
+class QuestionAPIViewSet(ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        return Question.objects.all()
