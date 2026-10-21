@@ -1,8 +1,12 @@
 from random import choices
 
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import IntegerField, ModelSerializer, Serializer
 
 from polls.models import Question, Choice
+
+
+class VoteSerializer(Serializer):
+    choice_id = IntegerField(min_value=1)
 
 
 class ChoiceSerializer(ModelSerializer):

@@ -1,10 +1,12 @@
 from django.contrib import messages
+from django.db import transaction
 from django.db.models import F, Sum
 from django.http import HttpResponse, Http404, HttpResponseRedirect, request
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.urls import reverse
 from django.views import generic
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
@@ -15,7 +17,7 @@ from .models import Question, Choice
 from django.core.mail import send_mail
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 
-from .serializers import QuestionSerializer
+from .serializers import ChoiceSerializer, QuestionSerializer, VoteSerializer
 
 
 class IndexView(generic.ListView):
@@ -282,3 +284,19 @@ class QuestionAPIViewSet(ModelViewSet):
 
     def get_queryset(self):
         return Question.objects.all()
+
+    @action(detail=True, methods=['post'])
+    @transaction.atomic
+    def vote(self, request, pk=None):
+        question = self.get_object()
+        serializer = VoteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        choice = get_object_or_404(
+            question.choice_set,
+            pk=serializer.validated_data['choice_id'],
+        )
+        Choice.objects.filter(pk=choice.pk).update(votes=F('votes') + 1)
+        choice.refresh_from_db()
+        return Response(ChoiceSerializer(choice).data)
+
+
