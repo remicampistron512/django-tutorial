@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.contrib import admin
 from django.db import models  # type: ignore
 from django.utils import timezone  # type: ignore
@@ -15,6 +16,13 @@ def text_excerpt(text, max_length):
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField("date published")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="questions",
+    )
 
     @classmethod
     def get_most_popular(cls):

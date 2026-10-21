@@ -21,4 +21,5 @@ from django.urls import include, path  # type: ignore
 urlpatterns = [
     path("polls/", include("polls.urls")),
     path("admin/", admin.site.urls),
+    path('api-auth/', include('rest_framework.urls'))
 ] + debug_toolbar_urls()

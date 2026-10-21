@@ -10,7 +10,6 @@
 
 <div class="row justify-content-center">
     <div class="col-lg-8">
-
         <div class="card shadow">
             <div class="card-body">
 
@@ -30,6 +29,7 @@
 
                                     <div class="text-muted small">
                                         {{ question.pub_date|date:"d M Y H:i" }}
+                                        <a href="{% url 'polls:remove_question' question.id %} ">Supprimer</a>
                                     </div>
                                 </div>
                             </li>
@@ -43,7 +43,6 @@
 
             </div>
         </div>
-
     </div>
 </div>
 

@@ -192,20 +192,21 @@ def login(request):
     # sinon, création du formulaire de login
     form = LoginForm(request, data=request.POST or None)
     # on a soumis le formulaire
-    if request.method == "POST" and form.is_valid():
-        username = form.cleaned_data["username"]
-        password = form.cleaned_data["password"]
+    if request.method == "POST":
+        if form.is_valid():
+            username = form.cleaned_data["username"]
+            password = form.cleaned_data["password"]
 
-        user = authenticate(request, username=username, password=password)
+            user = authenticate(request, username=username, password=password)
 
-        # l'utilisateur est valide
-        if user is not None:
-            auth_login(request, user)
-            next_url = request.POST.get("next") or request.GET.get("next")
-            return HttpResponseRedirect(next_url or reverse("polls:index"))
-        # sinon message d'erreur
-    else:
-        messages.error(request, "Invalid username or password.")
+            # l'utilisateur est valide.
+            if user is not None:
+                auth_login(request, user)
+                next_url = request.POST.get("next") or request.GET.get("next")
+                return HttpResponseRedirect(next_url or reverse("polls:index"))
+            # sinon message d'erreur
+        else:
+            messages.error(request, "Invalid username or password.")
 
     return render(
         request,
@@ -215,6 +216,13 @@ def login(request):
             "next": request.GET.get("next", "")
         }
     )
+def remove_question(request,question_id):
+    if question_id:
+        question = get_object_or_404(Question, pk=question_id)
+        question.user
+        return HttpResponseRedirect(reverse("polls:all"))
+
+
 
 
 # déconnexion

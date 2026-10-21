@@ -16,4 +16,7 @@ urlpatterns = [
     path("name/", views.get_name, name="name"),
     path("login/", views.login, name="login"),
     path("logout/", views.logout, name="logout"),
+    path("<int:question_id>/remove_question/", views.remove_question, name="remove_question")
+
+
 ]
