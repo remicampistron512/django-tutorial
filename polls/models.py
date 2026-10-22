@@ -2,7 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.contrib import admin
-from django.db import models  # type: ignore
+from django.db import models, transaction  # type: ignore
 from django.utils import timezone  # type: ignore
 
 MAX_LENGTH = 20
