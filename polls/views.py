@@ -25,6 +25,7 @@ class IndexView(generic.ListView):
     context_object_name = "latest_question_list"
 
     def dispatch(self, request, *args, **kwargs):
+        # Autorise la consultation sans connexion avec le mode visiteur.
         visitor = request.GET.get("visitor") == "true"
         if not request.user.is_authenticated and (not visitor):
             login_url = reverse("polls:login")
@@ -56,6 +57,7 @@ class ResultsView(generic.DetailView):
 
 
 def all(request):
+    # Affiche toutes les questions, sans filtre sur la date.
     return render(
         request,
         "polls/all.html",
@@ -69,12 +71,14 @@ def add_question(request):
             question_text = request.POST.get("question_text", "").strip()
             choices = []
 
+            # Ignore les champs de choix laissés vides.
             for i in range(5):
                 text = request.POST.get("choice_text" + str(i), "").strip()
                 if text:
                     choices.append(text)
 
             if question_text and choices:
+                # Associe la nouvelle question à l'utilisateur connecté.
                 q = Question.objects.create(
                     question_text=question_text,
                     pub_date=timezone.now(),
@@ -95,6 +99,7 @@ def add_question(request):
 
 
 def statistics(request):
+    # Regroupe les nombres de questions, de choix et de votes.
     total_questions = Question.objects.all().count()
     total_choices = Choice.objects.all().count()
     total_votes = Choice.objects.all().aggregate(sum=Sum("votes"))["sum"]
@@ -118,6 +123,7 @@ def statistics(request):
 
 
 def frequency(request, question_id):
+    # Charge la question ou renvoie une erreur 404 si elle n'existe pas.
     question = get_object_or_404(Question, pk=question_id)
 
     return render(
@@ -144,6 +150,7 @@ def vote(request, question_id):
             },
         )
     else:
+        # Incrémente le compteur directement dans la base de données.
         selected_choice.votes = F("votes") + 1
         selected_choice.save()
         # Always return an HttpResponseRedirect after successfully dealing
@@ -181,6 +188,7 @@ def contact(request):
             cc_myself = form.cleaned_data["cc_myself"]
 
             recipients = ["info@example.com"]
+            # Ajoute l'expéditeur aux destinataires s'il souhaite une copie.
             if cc_myself:
                 recipients.append(sender)
 
@@ -265,7 +273,7 @@ def add_question2(request):
                         question=q,
                         choice_text=text
                     )
-        # on consulte simplément la page, on construit le formulaire
+        # On consulte simplement la page : on construit le formulaire.
         else:
             form = AddQuestionForm()
         return render(request, "polls/add_question2.html", {"form": form})
@@ -275,11 +283,14 @@ def add_question2(request):
 
 
 class QuestionAPIViewSet(ModelViewSet):
+    # Fournit les opérations API de consultation et de modification.
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    # Réserve les modifications aux utilisateurs authentifiés.
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
+        # Définit l'auteur côté serveur lors de la création.
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
@@ -289,13 +300,17 @@ class QuestionAPIViewSet(ModelViewSet):
     @transaction.atomic
     def vote(self, request, pk=None):
         question = self.get_object()
+        # Valide l'identifiant du choix envoyé dans la requête.
         serializer = VoteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        # Vérifie que le choix appartient bien à cette question.
         choice = get_object_or_404(
             question.choice_set,
             pk=serializer.validated_data['choice_id'],
         )
+        # Évite de perdre des votes lorsque plusieurs requêtes arrivent ensemble.
         Choice.objects.filter(pk=choice.pk).update(votes=F('votes') + 1)
+        # Recharge le compteur mis à jour avant de renvoyer le choix.
         choice.refresh_from_db()
         return Response(ChoiceSerializer(choice).data)
 

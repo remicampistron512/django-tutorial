@@ -9,6 +9,7 @@ MAX_LENGTH = 20
 
 
 def text_excerpt(text, max_length):
+    # Tronque les textes trop longs pour l'affichage.
     return text[:max_length] + ('...' if len(text) > max_length
                                 else '')
 
@@ -16,6 +17,7 @@ def text_excerpt(text, max_length):
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
     pub_date = models.DateTimeField("date published")
+    # Conserve la question si son auteur est supprimé.
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
@@ -26,6 +28,7 @@ class Question(models.Model):
 
     @classmethod
     def get_most_popular(cls):
+        # Compare les questions selon le total des votes de leurs choix.
         all_questions = cls.objects.all()
         best_answer = (0,0)
         for question in all_questions:
@@ -41,6 +44,7 @@ class Question(models.Model):
 
     @classmethod
     def get_least_popular(cls):
+        # Recherche le plus petit total de votes.
         all_questions = cls.objects.all()
         worst_question = None
         min_votes = None
@@ -61,12 +65,14 @@ class Question(models.Model):
 
 
     def __str__(self):
+        # Affiche la date et un extrait du texte de la question.
         return "{} {}".format(self.pub_date,
                               text_excerpt(self.question_text,
                                            MAX_LENGTH))
 
 
     def get_choices(self):
+        # Renvoie le texte, les votes et le pourcentage de chaque choix.
         total = 0
         choices = self.choice_set.all()
         for c in choices:
@@ -77,6 +83,7 @@ class Question(models.Model):
     def get_max_choice(self):
         total = 0
 
+        # Récupère les choix liés à cette question.
         choices = self.choice_set.all()
         max_choice = choices[0]
         for c in choices:
@@ -92,14 +99,17 @@ class Question(models.Model):
     )
 
     def was_published_recently(self):
+        # Vérifie si la publication date des dernières 24 heures.
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
     def age(self):
+        # Calcule le temps écoulé depuis la publication.
         return timezone.now() - self.pub_date
 
 
 class Choice(models.Model):
+    # Supprime les choix lorsque leur question est supprimée.
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     votes = models.IntegerField(default=0)
