@@ -29,7 +29,10 @@
 
                                     <div class="text-muted small">
                                         {{ question.pub_date|date:"d M Y H:i" }}
-                                        <a href="{% url 'polls:remove_question' question.id %} ">Supprimer</a>
+                                        <form method="post" action="{% url 'polls:remove_question' question.id %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-link btn-sm p-0">Supprimer</button>
+                                        </form>
                                     </div>
                                 </div>
                             </li>

@@ -58,10 +58,12 @@
                             Version améliorée
                         </a>
 
-                        <a href="{% url 'polls:logout' %}"
-                           class="btn btn-outline-danger ms-auto">
-                            Se déconnecter
-                        </a>
+                        <form method="post" action="{% url 'polls:logout' %}" class="ms-auto">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">
+                                Se déconnecter
+                            </button>
+                        </form>
                     </div>
 
                 </div>

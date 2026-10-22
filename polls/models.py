@@ -26,6 +26,11 @@ class Question(models.Model):
         related_name="questions",
     )
 
+    def __init__(self, *args: Any, **kwargs: Any):
+        super().__init__(args, kwargs)
+        self.id = None
+        self.choice_set = None
+
     @classmethod
     def get_most_popular(cls):
         # Compare les questions selon le total des votes de leurs choix.

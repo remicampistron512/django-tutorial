@@ -1,15 +1,15 @@
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import F, Sum
-from django.http import HttpResponse, Http404, HttpResponseRedirect, request
+from django.http import  HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.urls import reverse
 from django.views import generic
+from django.views.decorators.http import require_POST, require_safe
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
 
 from .forms import NameForm, ContactForm, AddQuestionForm, LoginForm
@@ -66,38 +66,39 @@ def all(request):
 
 
 def add_question(request):
-    if request.user.is_authenticated:
-        if request.method == "POST":
-            question_text = request.POST.get("question_text", "").strip()
-            choices = []
-
-            # Ignore les champs de choix laissés vides.
-            for i in range(5):
-                text = request.POST.get("choice_text" + str(i), "").strip()
-                if text:
-                    choices.append(text)
-
-            if question_text and choices:
-                # Associe la nouvelle question à l'utilisateur connecté.
-                q = Question.objects.create(
-                    question_text=question_text,
-                    pub_date=timezone.now(),
-                    user=request.user,
-                )
-
-                for text in choices:
-                    Choice.objects.create(
-                        question=q,
-                        choice_text=text
-                    )
-
-                return HttpResponseRedirect(reverse("polls:add_question"))
-
-        return render(request, "polls/add_question.html")
-    else:
+    if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("polls:index"))
 
+    if request.method == "POST":
+        question_text = request.POST.get("question_text", "").strip()
+        choices = []
 
+        # Ignore les champs de choix laissés vides.
+        for i in range(5):
+            text = request.POST.get("choice_text" + str(i), "").strip()
+            if text:
+                choices.append(text)
+
+        if question_text and choices:
+            # Associe la nouvelle question à l'utilisateur connecté.
+            q = Question.objects.create(
+                question_text=question_text,
+                pub_date=timezone.now(),
+                user=request.user,
+            )
+
+            for text in choices:
+                Choice.objects.create(
+                    question=q,
+                    choice_text=text
+                )
+
+            return HttpResponseRedirect(reverse("polls:add_question"))
+
+    return render(request, "polls/add_question.html")
+
+
+@require_safe
 def statistics(request):
     # Regroupe les nombres de questions, de choix et de votes.
     total_questions = Question.objects.all().count()
@@ -122,6 +123,7 @@ def statistics(request):
     )
 
 
+@require_safe
 def frequency(request, question_id):
     # Charge la question ou renvoie une erreur 404 si elle n'existe pas.
     question = get_object_or_404(Question, pk=question_id)
@@ -135,6 +137,7 @@ def frequency(request, question_id):
     )
 
 
+@require_POST
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -233,6 +236,7 @@ def login(request):
             "next": request.GET.get("next", "")
         }
     )
+@require_POST
 def remove_question(request,question_id):
     if question_id:
         question = get_object_or_404(Question, pk=question_id)
@@ -243,43 +247,42 @@ def remove_question(request,question_id):
 
 
 # déconnexion
+@require_POST
 def logout(request):
     auth_logout(request)
     return HttpResponseRedirect(reverse("polls:login"))
 
 
 def add_question2(request):
-    # l'utilisateur est authentifié.
-    if request.user.is_authenticated:
-        # on a ajouté une question, le traitement se lance
-        if request.method == "POST":
-            question_text = AddQuestionForm(request.POST)
-            choices = []
-
-            for i in range(5):
-                text = request.POST.get("choice_" + str(i), "").strip()
-                if text:
-                    choices.append(text)
-
-            if question_text and choices:
-                q = Question.objects.create(
-                    question_text=question_text,
-                    pub_date=timezone.now(),
-                    user=request.user,
-                )
-
-                for text in choices:
-                    Choice.objects.create(
-                        question=q,
-                        choice_text=text
-                    )
-        # On consulte simplement la page : on construit le formulaire.
-        else:
-            form = AddQuestionForm()
-        return render(request, "polls/add_question2.html", {"form": form})
-    # l'utilisateur n'est pas authentifié, on le renvoie vers l'index.
-    else:
+    if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("polls:index"))
+
+    # on a ajouté une question, le traitement se lance
+    if request.method == "POST":
+        question_text = AddQuestionForm(request.POST)
+        choices = []
+
+        for i in range(5):
+            text = request.POST.get("choice_" + str(i), "").strip()
+            if text:
+                choices.append(text)
+
+        if question_text and choices:
+            q = Question.objects.create(
+                question_text=question_text,
+                pub_date=timezone.now(),
+                user=request.user,
+            )
+
+            for text in choices:
+                Choice.objects.create(
+                    question=q,
+                    choice_text=text
+                )
+    # On consulte simplement la page : on construit le formulaire.
+    else:
+        form = AddQuestionForm()
+    return render(request, "polls/add_question2.html", {"form": form})
 
 
 class QuestionAPIViewSet(ModelViewSet):
